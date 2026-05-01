@@ -183,7 +183,7 @@ function Tienda() {
                     height={isMobile ? '110' : '130'}
                     image={producto.imagen || `https://placehold.co/300x130/${fondo.replace('#', '')}/1a1a2e?text=${encodeURIComponent(producto.nombre)}`}
                     alt={producto.nombre}
-                    sx={{ backgroundColor: fondo, objectFit: 'cover' }}
+                    sx={{ backgroundColor: fondo, objectFit: 'contain', p: 1 }}
                   />
 
                   <CardContent sx={{ pb: 0, px: { xs: 1.5, md: 2 } }}>
