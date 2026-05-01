@@ -1,7 +1,7 @@
 import {
-  Box, Container, Typography, Grid, Card, CardContent,
+  Box, Container, Typography, Card, CardContent,
   CardMedia, CardActions, Button, AppBar, Toolbar,
-  IconButton, Badge, Chip, Stack, CircularProgress
+  Chip, Stack, CircularProgress
 } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
@@ -50,7 +50,7 @@ function Tienda() {
       <AppBar position="sticky" sx={{ backgroundColor: colores.dark, boxShadow: 'none' }}>
         <Toolbar sx={{ justifyContent: 'space-between', px: 3 }}>
           <Typography variant="h6" fontWeight="500" sx={{ color: colores.beigeLight, letterSpacing: 1 }}>
-            MAXISHOP2
+            🏪 Kiosco
           </Typography>
           <Button
             onClick={() => setCarritoAbierto(true)}
@@ -146,58 +146,56 @@ function Tienda() {
             <Typography mt={2} sx={{ color: colores.muted }}>Cargando productos...</Typography>
           </Box>
         ) : (
-          <Grid container spacing={2}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
             {productosFiltrados.map((producto, index) => (
-              <Grid item xs={12} sm={6} md={4} key={producto.id}>
-                <Card sx={{ borderRadius: 3, border: `0.5px solid ${colores.border}`, boxShadow: 'none', position: 'relative', transition: 'transform 0.2s, border-color 0.2s', '&:hover': { transform: 'translateY(-3px)', borderColor: colores.gold } }}>
-                  
-                  {index % 3 === 0 && (
-                    <Box sx={{ position: 'absolute', top: 10, left: 10, background: '#E24B4A', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 500 }}>
-                      -20%
-                    </Box>
-                  )}
-                  {index % 3 === 2 && (
-                    <Box sx={{ position: 'absolute', top: 10, left: 10, background: colores.gold, color: colores.dark, fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 500 }}>
-                      Nuevo
-                    </Box>
-                  )}
+              <Card key={producto.id} sx={{ borderRadius: 3, border: `0.5px solid ${colores.border}`, boxShadow: 'none', position: 'relative', transition: 'transform 0.2s, border-color 0.2s', '&:hover': { transform: 'translateY(-3px)', borderColor: colores.gold } }}>
 
-                  <Box sx={{ position: 'absolute', top: 10, right: 10, background: 'white', border: `0.5px solid ${colores.border}`, width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, cursor: 'pointer' }}>
-                    <FavoriteBorderIcon sx={{ fontSize: 14, color: colores.muted }} />
+                {index % 3 === 0 && (
+                  <Box sx={{ position: 'absolute', top: 10, left: 10, background: '#E24B4A', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 500 }}>
+                    -20%
                   </Box>
+                )}
+                {index % 3 === 2 && (
+                  <Box sx={{ position: 'absolute', top: 10, left: 10, background: colores.gold, color: colores.dark, fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 500 }}>
+                    Nuevo
+                  </Box>
+                )}
 
-                  <CardMedia
-                    component="img"
-                    height="130"
-                    image={producto.imagen || `https://via.placeholder.com/300x130/F5EDD8/2C2416?text=${producto.nombre}`}
-                    alt={producto.nombre}
-                    sx={{ backgroundColor: colores.beigeLight }}
-                  />
+                <Box sx={{ position: 'absolute', top: 10, right: 10, background: 'white', border: `0.5px solid ${colores.border}`, width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, cursor: 'pointer' }}>
+                  <FavoriteBorderIcon sx={{ fontSize: 14, color: colores.muted }} />
+                </Box>
 
-                  <CardContent sx={{ pb: 0 }}>
-                    <Typography sx={{ fontSize: 10, color: '#9B8560', textTransform: 'uppercase', letterSpacing: 0.5, mb: 0.5 }}>
-                      {producto.categoria}
+                <CardMedia
+                  component="img"
+                  height="130"
+                  image={producto.imagen || `https://placehold.co/300x130/F5EDD8/2C2416?text=${encodeURIComponent(producto.nombre)}`}
+                  alt={producto.nombre}
+                  sx={{ backgroundColor: colores.beigeLight }}
+                />
+
+                <CardContent sx={{ pb: 0 }}>
+                  <Typography sx={{ fontSize: 10, color: '#9B8560', textTransform: 'uppercase', letterSpacing: 0.5, mb: 0.5 }}>
+                    {producto.categoria}
+                  </Typography>
+                  <Typography fontWeight="500" sx={{ fontSize: 13, color: colores.dark, mb: 1 }}>
+                    {producto.nombre}
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography sx={{ fontSize: 16, fontWeight: 500, color: colores.gold }}>
+                      ${Number(producto.precio).toLocaleString()}
                     </Typography>
-                    <Typography fontWeight="500" sx={{ fontSize: 13, color: colores.dark, mb: 1 }}>
-                      {producto.nombre}
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography sx={{ fontSize: 16, fontWeight: 500, color: colores.gold }}>
-                        ${Number(producto.precio).toLocaleString()}
-                      </Typography>
-                      <Button
-                        onClick={() => agregarAlCarrito(producto)}
-                        sx={{ minWidth: 30, width: 30, height: 30, background: colores.dark, color: colores.beigeLight, borderRadius: 2, fontSize: 18, p: 0, '&:hover': { background: colores.gold, color: colores.dark } }}
-                      >
-                        +
-                      </Button>
-                    </Box>
-                  </CardContent>
-                  <CardActions />
-                </Card>
-              </Grid>
+                    <Button
+                      onClick={() => agregarAlCarrito(producto)}
+                      sx={{ minWidth: 30, width: 30, height: 30, background: colores.dark, color: colores.beigeLight, borderRadius: 2, fontSize: 18, p: 0, '&:hover': { background: colores.gold, color: colores.dark } }}
+                    >
+                      +
+                    </Button>
+                  </Box>
+                </CardContent>
+                <CardActions />
+              </Card>
             ))}
-          </Grid>
+          </div>
         )}
 
         {/* OFERTA DEL DIA */}
