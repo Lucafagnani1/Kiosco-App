@@ -252,7 +252,7 @@ function Tienda() {
       </Container>
 
       {/* FOOTER */}
-      <Box sx={{ backgroundColor: '#1a1a2e', py: 2.5, px: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 4, gap: 2, width: '100%', overflow: 'hidden' }}>
+     <Box sx={{ backgroundColor: '#1a1a2e', py: 2.5, px: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 4, gap: 4, width: '100%', overflow: 'hidden' }}>
         <Box sx={{ display: 'flex', flexShrink: 0 }}>
           {letras.map(({ l, c }) => (
             <Typography key={l} sx={{ color: c, fontSize: { xs: 16, md: 20 }, fontWeight: 700 }}>{l}</Typography>
