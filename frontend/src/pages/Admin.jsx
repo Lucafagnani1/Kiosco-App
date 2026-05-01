@@ -11,6 +11,7 @@ import AddIcon from '@mui/icons-material/Add'
 import { useState, useEffect } from 'react'
 
 const categorias = ['Golosinas', 'Bebidas', 'Snacks', 'Accesorios', 'Comida']
+const API_URL = 'https://kiosco-app-production-5cff.up.railway.app'
 
 const productoVacio = { nombre: '', precio: '', categoria: '', imagen: '' }
 
@@ -21,7 +22,7 @@ function Admin() {
   const [editando, setEditando] = useState(false)
 
   const cargarProductos = () => {
-    fetch('http://localhost:3001/api/productos')
+    fetch(`${API_URL}/api/productos`)
       .then(res => res.json())
       .then(data => setProductos(data))
   }
@@ -42,8 +43,8 @@ function Admin() {
 
   const guardar = () => {
     const url = editando
-      ? `http://localhost:3001/api/productos/${productoActual.id}`
-      : 'http://localhost:3001/api/productos'
+      ? `${API_URL}/api/productos/${productoActual.id}`
+      : `${API_URL}/api/productos`
     const method = editando ? 'PUT' : 'POST'
 
     fetch(url, {
@@ -59,24 +60,18 @@ function Admin() {
 
   const eliminar = (id) => {
     if (!window.confirm('¿Seguro que querés eliminar este producto?')) return
-    fetch(`http://localhost:3001/api/productos/${id}`, { method: 'DELETE' })
+    fetch(`${API_URL}/api/productos/${id}`, { method: 'DELETE' })
       .then(() => cargarProductos())
   }
 
   return (
     <Box>
-      {/* HEADER */}
       <AppBar position="sticky" sx={{ backgroundColor: '#1a1a2e' }}>
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="h6" fontWeight="bold">
             🔧 Panel de Administración
           </Typography>
-          <Button
-            color="inherit"
-            href="/"
-          >
-            Ver Tienda
-          </Button>
+          <Button color="inherit" href="/">Ver Tienda</Button>
         </Toolbar>
       </AppBar>
 
@@ -93,7 +88,6 @@ function Admin() {
           </Button>
         </Box>
 
-        {/* TABLA */}
         <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 3 }}>
           <Table>
             <TableHead sx={{ backgroundColor: '#1a1a2e' }}>
@@ -125,7 +119,6 @@ function Admin() {
         </TableContainer>
       </Container>
 
-      {/* DIALOG AGREGAR/EDITAR */}
       <Dialog open={dialogAbierto} onClose={() => setDialogAbierto(false)} fullWidth maxWidth="sm">
         <DialogTitle>{editando ? 'Editar Producto' : 'Agregar Producto'}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>

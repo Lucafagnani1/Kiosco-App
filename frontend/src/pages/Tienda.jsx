@@ -17,7 +17,7 @@ function Tienda() {
   const [cargando, setCargando] = useState(true)
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/productos')
+    fetch('https://kiosco-app-production-5cff.up.railway.app/api/productos')
       .then(res => res.json())
       .then(data => {
         setProductos(data)
