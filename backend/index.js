@@ -15,7 +15,10 @@ app.use((req, res, next) => {
 app.use(express.json())
 
 const productosRouter = require('./routes/productos')
+const authRouter = require('./routes/auth')
+
 app.use('/api/productos', productosRouter)
+app.use('/api/auth', authRouter)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
