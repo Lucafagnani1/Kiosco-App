@@ -16,9 +16,11 @@ app.use(express.json())
 
 const productosRouter = require('./routes/productos')
 const authRouter = require('./routes/auth')
+const pedidosRouter = require('./routes/pedidos')
 
 app.use('/api/productos', productosRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/pedidos', pedidosRouter)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
