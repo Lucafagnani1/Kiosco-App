@@ -44,10 +44,10 @@ function Tienda() {
   ]
 
   return (
-    <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh', overflowX: 'hidden', maxWidth: '100vw' }}>
+    <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh', overflowX: 'hidden', width: '100%' }}>
 
       {/* HEADER */}
-      <AppBar position="sticky" sx={{ backgroundColor: '#1a1a2e', boxShadow: 'none' }}>
+      <AppBar position="sticky" sx={{ backgroundColor: '#1a1a2e', boxShadow: 'none', overflowX: 'hidden' }}>
         <Toolbar sx={{ justifyContent: 'flex-end', px: { xs: 2, md: 3 } }}>
           <Button
             onClick={() => setCarritoAbierto(true)}
@@ -73,8 +73,8 @@ function Tienda() {
       </AppBar>
 
       {/* HERO */}
-      <Box sx={{ backgroundColor: '#1a1a2e', py: { xs: 4, md: 5 }, textAlign: 'center', px: 2, overflowX: 'hidden', width: '100%' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2, flexWrap: 'nowrap', overflow: 'hidden' }}>
+      <Box sx={{ backgroundColor: '#1a1a2e', py: { xs: 4, md: 5 }, textAlign: 'center', px: 2, width: '100%' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2, overflow: 'hidden' }}>
           {letras.map(({ l, c }) => (
             <Typography key={l} sx={{ color: c, fontSize: { xs: '10vw', sm: 56, md: 72 }, fontWeight: 700, lineHeight: 1, letterSpacing: -1 }}>
               {l}
@@ -123,8 +123,20 @@ function Tienda() {
           <Typography sx={{ fontSize: 13, color: '#aaa' }}>— Los más vendidos</Typography>
         </Box>
 
-        {/* CATEGORIAS */}
-        <Stack direction="row" spacing={1} flexWrap="wrap" mb={5}>
+        {/* CATEGORIAS — scroll horizontal en mobile */}
+        <Stack
+          direction="row"
+          spacing={1}
+          mb={5}
+          sx={{
+            overflowX: 'auto',
+            flexWrap: 'nowrap',
+            pb: 1,
+            '&::-webkit-scrollbar': { display: 'none' },
+            msOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+          }}
+        >
           {categorias.map(cat => (
             <Chip
               key={cat}
@@ -132,7 +144,7 @@ function Tienda() {
               onClick={() => setCategoriaActiva(cat)}
               size={isMobile ? 'small' : 'medium'}
               sx={{
-                mb: 1,
+                flexShrink: 0,
                 cursor: 'pointer',
                 fontSize: { xs: 11, md: 13 },
                 backgroundColor: categoriaActiva === cat ? '#1a1a2e' : 'white',
@@ -240,15 +252,15 @@ function Tienda() {
       </Container>
 
       {/* FOOTER */}
-      <Box sx={{ backgroundColor: '#1a1a2e', py: 2.5, px: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 4, flexWrap: 'wrap', gap: 2, width: '100%' }}>
-        <Box sx={{ display: 'flex' }}>
+      <Box sx={{ backgroundColor: '#1a1a2e', py: 2.5, px: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 4, gap: 2, width: '100%', overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', flexShrink: 0 }}>
           {letras.map(({ l, c }) => (
             <Typography key={l} sx={{ color: c, fontSize: { xs: 16, md: 20 }, fontWeight: 700 }}>{l}</Typography>
           ))}
         </Box>
-        <Stack direction="row" spacing={{ xs: 2, md: 3 }}>
+        <Stack direction="row" spacing={{ xs: 1.5, md: 3 }} sx={{ flexShrink: 0 }}>
           {['Inicio', 'Productos', 'Contacto'].map(link => (
-            <Typography key={link} sx={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer', '&:hover': { color: '#FF6B35' } }}>{link}</Typography>
+            <Typography key={link} sx={{ color: 'rgba(255,255,255,0.4)', fontSize: { xs: 11, md: 12 }, cursor: 'pointer', whiteSpace: 'nowrap', '&:hover': { color: '#FF6B35' } }}>{link}</Typography>
           ))}
         </Stack>
       </Box>
