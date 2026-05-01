@@ -6,12 +6,12 @@ import CloseIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/Delete'
 
 function Carrito({ abierto, onCerrar, productos, onEliminar }) {
-  const total = productos.reduce((acc, p) => acc + p.precio, 0)
+  const total = productos.reduce((acc, p) => acc + Number(p.precio), 0)
 
   return (
     <Drawer anchor="right" open={abierto} onClose={onCerrar}>
       <Box sx={{ width: 320, p: 2, display: 'flex', flexDirection: 'column', height: '100%' }}>
-        
+
         {/* HEADER DEL CARRITO */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h6" fontWeight="bold">🛒 Tu Carrito</Typography>
@@ -40,7 +40,7 @@ function Carrito({ abierto, onCerrar, productos, onEliminar }) {
               >
                 <ListItemText
                   primary={p.nombre}
-                  secondary={`$${p.precio.toLocaleString()}`}
+                  secondary={`$${Number(p.precio).toLocaleString('es-AR')}`}
                 />
               </ListItem>
             ))}
@@ -53,8 +53,8 @@ function Carrito({ abierto, onCerrar, productos, onEliminar }) {
         <Box sx={{ pt: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
             <Typography variant="h6" fontWeight="bold">Total:</Typography>
-            <Typography variant="h6" color="primary" fontWeight="bold">
-              ${total.toLocaleString()}
+            <Typography variant="h6" fontWeight="bold" sx={{ color: '#FF6B35' }}>
+              ${total.toLocaleString('es-AR')}
             </Typography>
           </Box>
           <Button
