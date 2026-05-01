@@ -1,7 +1,7 @@
 import {
   Box, Container, Typography, Card, CardContent,
   CardMedia, CardActions, Button, AppBar, Toolbar,
-  Chip, Stack, CircularProgress
+  Chip, Stack, CircularProgress, useMediaQuery, useTheme
 } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
@@ -9,18 +9,7 @@ import { useState, useEffect } from 'react'
 import Carrito from '../components/Carrito'
 
 const API_URL = 'https://kiosco-app-production-5cff.up.railway.app'
-
 const categorias = ['Todos', '🍬 Golosinas', '🥤 Bebidas', '🍟 Snacks', '🎧 Accesorios', '🍔 Comida']
-
-const colores = {
-  dark: '#2C2416',
-  beige: '#F9F6F1',
-  beigeLight: '#F5EDD8',
-  beigeMid: '#EDE0C8',
-  gold: '#C9A96E',
-  muted: '#6B5A3E',
-  border: '#E2D5BE',
-}
 
 function Tienda() {
   const [categoriaActiva, setCategoriaActiva] = useState('Todos')
@@ -28,6 +17,9 @@ function Tienda() {
   const [carritoAbierto, setCarritoAbierto] = useState(false)
   const [productos, setProductos] = useState([])
   const [cargando, setCargando] = useState(true)
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'))
 
   useEffect(() => {
     fetch(`${API_URL}/api/productos`)
@@ -43,23 +35,39 @@ function Tienda() {
   const agregarAlCarrito = (producto) => setCarrito(prev => [...prev, producto])
   const eliminarDelCarrito = (index) => setCarrito(prev => prev.filter((_, i) => i !== index))
 
+  const gridCols = isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)'
+
+  const letras = [
+    { l: 'M', c: '#FF6B35' }, { l: 'A', c: '#FFD93D' }, { l: 'X', c: '#6BCB77' },
+    { l: 'I', c: '#4D96FF' }, { l: 'S', c: '#FF6B35' }, { l: 'H', c: '#FFD93D' },
+    { l: 'O', c: '#6BCB77' }, { l: 'P', c: '#FF6BAA' }
+  ]
+
   return (
-    <Box sx={{ backgroundColor: colores.beige, minHeight: '100vh' }}>
+    <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
 
       {/* HEADER */}
-      <AppBar position="sticky" sx={{ backgroundColor: colores.dark, boxShadow: 'none' }}>
-        <Toolbar sx={{ justifyContent: 'space-between', px: 3 }}>
-          <Typography variant="h6" fontWeight="500" sx={{ color: colores.beigeLight, letterSpacing: 1 }}>
-            🏪 Kiosco
+      <AppBar position="sticky" sx={{ backgroundColor: '#1a1a2e', boxShadow: 'none' }}>
+        <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, md: 3 } }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: { xs: 10, md: 12 }, letterSpacing: 2 }}>
+            bienvenido a
           </Typography>
           <Button
             onClick={() => setCarritoAbierto(true)}
-            sx={{ backgroundColor: colores.gold, color: colores.dark, borderRadius: 2, px: 2, fontWeight: 500, '&:hover': { backgroundColor: '#B8914F' } }}
-            startIcon={<ShoppingCartIcon />}
+            sx={{
+              backgroundColor: '#FF6B35',
+              color: 'white',
+              borderRadius: 2,
+              px: { xs: 1.5, md: 2 },
+              fontWeight: 500,
+              fontSize: { xs: 11, md: 13 },
+              '&:hover': { backgroundColor: '#e55a25' }
+            }}
+            startIcon={<ShoppingCartIcon sx={{ fontSize: { xs: 16, md: 20 } }} />}
           >
-            Mi carrito
+            {isMobile ? 'Carrito' : 'Mi carrito'}
             {carrito.length > 0 && (
-              <Box sx={{ ml: 1, background: '#E24B4A', color: 'white', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11 }}>
+              <Box sx={{ ml: 1, background: 'white', color: '#FF6B35', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700 }}>
                 {carrito.length}
               </Box>
             )}
@@ -68,56 +76,54 @@ function Tienda() {
       </AppBar>
 
       {/* HERO */}
-      <Box sx={{ backgroundColor: colores.beigeMid, display: 'flex', minHeight: 200 }}>
-        <Box sx={{ flex: 1, p: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <Box sx={{ display: 'inline-block', backgroundColor: colores.gold, color: colores.dark, fontSize: 11, fontWeight: 500, px: 2, py: 0.5, borderRadius: 5, mb: 1.5, width: 'fit-content' }}>
-            Envío a domicilio disponible
-          </Box>
-          <Typography variant="h4" fontWeight="500" sx={{ color: colores.dark, lineHeight: 1.3, mb: 1 }}>
-            Todo lo que necesitás,<br />desde casa
-          </Typography>
-          <Typography sx={{ color: colores.muted, fontSize: 13, mb: 2 }}>
-            Golosinas, bebidas, snacks y accesorios con el mejor precio del barrio
-          </Typography>
-          <Stack direction="row" spacing={1}>
-            <Button variant="contained" sx={{ backgroundColor: colores.dark, color: colores.beigeLight, borderRadius: 2, '&:hover': { backgroundColor: '#3D3020' } }}>
-              Ver productos
-            </Button>
-            <Button variant="outlined" sx={{ borderColor: colores.dark, color: colores.dark, borderRadius: 2 }}>
-              Conocer más
-            </Button>
-          </Stack>
+      <Box sx={{ backgroundColor: '#1a1a2e', py: { xs: 4, md: 5 }, textAlign: 'center', px: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+          {letras.map(({ l, c }) => (
+            <Typography key={l} sx={{ color: c, fontSize: { xs: 40, sm: 56, md: 72 }, fontWeight: 700, lineHeight: 1, letterSpacing: -1 }}>
+              {l}
+            </Typography>
+          ))}
         </Box>
-        <Box sx={{ width: 200, backgroundColor: '#D4C4A0', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 80 }}>
-          🛍️
-        </Box>
+        <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 2 }}>
+          <Button variant="contained" size={isMobile ? 'small' : 'medium'}
+            sx={{ backgroundColor: '#FF6B35', color: 'white', borderRadius: 2, '&:hover': { backgroundColor: '#e55a25' } }}>
+            Ver productos
+          </Button>
+          <Button variant="outlined" size={isMobile ? 'small' : 'medium'}
+            sx={{ borderColor: 'rgba(255,255,255,0.3)', color: 'white', borderRadius: 2, '&:hover': { borderColor: 'white' } }}>
+            Conocer más
+          </Button>
+        </Stack>
       </Box>
 
       {/* PROMO BAR */}
-      <Box sx={{ backgroundColor: colores.dark, py: 1.5, display: 'flex', justifyContent: 'center', gap: 4 }}>
-        {[['🚚', 'Envío rápido'], ['💳', 'Mercado Pago'], ['⭐', 'Calidad garantizada'], ['🕐', 'Abierto todos los días']].map(([icon, text]) => (
-          <Box key={text} sx={{ display: 'flex', alignItems: 'center', gap: 1, color: colores.beigeLight, fontSize: 12 }}>
-            <span style={{ fontSize: 16 }}>{icon}</span> {text}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' } }}>
+        {[['🚚', 'Envío rápido', '#FF6B35'], ['💳', 'Mercado Pago', '#FFD93D'], ['⭐', 'Calidad garantizada', '#6BCB77'], ['🕐', 'Todos los días', '#4D96FF']].map(([icon, text, bg]) => (
+          <Box key={text} sx={{ backgroundColor: bg, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+            <span style={{ fontSize: 16 }}>{icon}</span>
+            <Typography sx={{ fontSize: { xs: 11, md: 12 }, fontWeight: 500, color: bg === '#FFD93D' ? '#333' : 'white' }}>
+              {text}
+            </Typography>
           </Box>
         ))}
       </Box>
 
       {/* STATS */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', backgroundColor: 'white', borderBottom: `1px solid ${colores.border}` }}>
-        {[['+ 500', 'Productos'], ['+1.2k', 'Clientes felices'], ['4.9 ★', 'Calificación'], ['24hs', 'Atención']].map(([num, label]) => (
-          <Box key={label} sx={{ p: 2, textAlign: 'center', borderRight: `0.5px solid ${colores.border}` }}>
-            <Typography sx={{ fontSize: 20, fontWeight: 500, color: colores.gold }}>{num}</Typography>
-            <Typography sx={{ fontSize: 11, color: '#9B8560' }}>{label}</Typography>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', backgroundColor: 'white', borderBottom: '1px solid #eee' }}>
+        {[['+ 500', 'Productos', '#FF6B35'], ['+1.2k', 'Clientes', '#FFD93D'], ['4.9 ★', 'Calificación', '#6BCB77'], ['24hs', 'Atención', '#4D96FF']].map(([num, label, color]) => (
+          <Box key={label} sx={{ p: { xs: 1.5, md: 2 }, textAlign: 'center', borderRight: '1px solid #eee' }}>
+            <Typography sx={{ fontSize: { xs: 14, md: 20 }, fontWeight: 700, color }}>{num}</Typography>
+            <Typography sx={{ fontSize: { xs: 9, md: 11 }, color: '#888' }}>{label}</Typography>
           </Box>
         ))}
       </Box>
 
-      <Container sx={{ py: 3 }}>
+      <Container sx={{ py: 3, px: { xs: 2, md: 3 } }}>
 
         {/* TITULO */}
-        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mb: 2 }}>
-          <Typography variant="h6" fontWeight="500" sx={{ color: colores.dark }}>Productos destacados</Typography>
-          <Typography sx={{ fontSize: 13, color: '#9B8560' }}>— Los más vendidos</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+          <Typography fontWeight="700" sx={{ color: '#1a1a2e', fontSize: { xs: 15, md: 18 } }}>Productos destacados</Typography>
+          <Typography sx={{ fontSize: 13, color: '#aaa' }}>— Los más vendidos</Typography>
         </Box>
 
         {/* CATEGORIAS */}
@@ -127,13 +133,15 @@ function Tienda() {
               key={cat}
               label={cat}
               onClick={() => setCategoriaActiva(cat)}
+              size={isMobile ? 'small' : 'medium'}
               sx={{
                 mb: 1,
                 cursor: 'pointer',
-                backgroundColor: categoriaActiva === cat ? colores.dark : 'white',
-                color: categoriaActiva === cat ? colores.beigeLight : colores.muted,
-                border: `1px solid ${categoriaActiva === cat ? colores.dark : colores.border}`,
-                '&:hover': { borderColor: colores.gold },
+                fontSize: { xs: 11, md: 13 },
+                backgroundColor: categoriaActiva === cat ? '#1a1a2e' : 'white',
+                color: categoriaActiva === cat ? 'white' : '#555',
+                border: `1.5px solid ${categoriaActiva === cat ? '#1a1a2e' : '#ddd'}`,
+                '&:hover': { borderColor: '#FF6B35' },
               }}
             />
           ))}
@@ -142,91 +150,108 @@ function Tienda() {
         {/* PRODUCTOS */}
         {cargando ? (
           <Box sx={{ textAlign: 'center', mt: 5 }}>
-            <CircularProgress sx={{ color: colores.gold }} />
-            <Typography mt={2} sx={{ color: colores.muted }}>Cargando productos...</Typography>
+            <CircularProgress sx={{ color: '#FF6B35' }} />
+            <Typography mt={2} sx={{ color: '#888' }}>Cargando productos...</Typography>
           </Box>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-            {productosFiltrados.map((producto, index) => (
-              <Card key={producto.id} sx={{ borderRadius: 3, border: `0.5px solid ${colores.border}`, boxShadow: 'none', position: 'relative', transition: 'transform 0.2s, border-color 0.2s', '&:hover': { transform: 'translateY(-3px)', borderColor: colores.gold } }}>
+          <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: '14px' }}>
+            {productosFiltrados.map((producto, index) => {
+              const fondos = ['#FFEBEB', '#EBF3FF', '#FFFBEB', '#EBFFEF', '#F3EBFF', '#FFEBF6']
+              const fondo = fondos[index % fondos.length]
+              return (
+                <Card key={producto.id} sx={{ borderRadius: 3, border: '1px solid #eee', boxShadow: 'none', position: 'relative', transition: 'transform 0.2s, border-color 0.2s', '&:hover': { transform: 'translateY(-3px)', borderColor: '#FF6B35' } }}>
 
-                {index % 3 === 0 && (
-                  <Box sx={{ position: 'absolute', top: 10, left: 10, background: '#E24B4A', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 500 }}>
-                    -20%
+                  {index % 3 === 0 && (
+                    <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#FF6B35', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>
+                      -20%
+                    </Box>
+                  )}
+                  {index % 3 === 2 && (
+                    <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#6BCB77', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>
+                      Nuevo
+                    </Box>
+                  )}
+                  {index % 3 === 1 && (
+                    <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#4D96FF', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>
+                      Top
+                    </Box>
+                  )}
+
+                  <Box sx={{ position: 'absolute', top: 8, right: 8, background: 'white', border: '1px solid #eee', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, cursor: 'pointer' }}>
+                    <FavoriteBorderIcon sx={{ fontSize: 14, color: '#aaa' }} />
                   </Box>
-                )}
-                {index % 3 === 2 && (
-                  <Box sx={{ position: 'absolute', top: 10, left: 10, background: colores.gold, color: colores.dark, fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 500 }}>
-                    Nuevo
-                  </Box>
-                )}
 
-                <Box sx={{ position: 'absolute', top: 10, right: 10, background: 'white', border: `0.5px solid ${colores.border}`, width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, cursor: 'pointer' }}>
-                  <FavoriteBorderIcon sx={{ fontSize: 14, color: colores.muted }} />
-                </Box>
+                  <CardMedia
+                    component="img"
+                    height={isMobile ? '110' : '130'}
+                    image={producto.imagen || `https://placehold.co/300x130/${fondo.replace('#', '')}/1a1a2e?text=${encodeURIComponent(producto.nombre)}`}
+                    alt={producto.nombre}
+                    sx={{ backgroundColor: fondo, objectFit: 'cover' }}
+                  />
 
-                <CardMedia
-                  component="img"
-                  height="130"
-                  image={producto.imagen || `https://placehold.co/300x130/F5EDD8/2C2416?text=${encodeURIComponent(producto.nombre)}`}
-                  alt={producto.nombre}
-                  sx={{ backgroundColor: colores.beigeLight }}
-                />
-
-                <CardContent sx={{ pb: 0 }}>
-                  <Typography sx={{ fontSize: 10, color: '#9B8560', textTransform: 'uppercase', letterSpacing: 0.5, mb: 0.5 }}>
-                    {producto.categoria}
-                  </Typography>
-                  <Typography fontWeight="500" sx={{ fontSize: 13, color: colores.dark, mb: 1 }}>
-                    {producto.nombre}
-                  </Typography>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography sx={{ fontSize: 16, fontWeight: 500, color: colores.gold }}>
-                      ${Number(producto.precio).toLocaleString()}
+                  <CardContent sx={{ pb: 0, px: { xs: 1.5, md: 2 } }}>
+                    <Typography sx={{ fontSize: 9, color: '#aaa', textTransform: 'uppercase', letterSpacing: 0.5, mb: 0.5 }}>
+                      {producto.categoria}
                     </Typography>
-                    <Button
-                      onClick={() => agregarAlCarrito(producto)}
-                      sx={{ minWidth: 30, width: 30, height: 30, background: colores.dark, color: colores.beigeLight, borderRadius: 2, fontSize: 18, p: 0, '&:hover': { background: colores.gold, color: colores.dark } }}
-                    >
-                      +
-                    </Button>
-                  </Box>
-                </CardContent>
-                <CardActions />
-              </Card>
-            ))}
+                    <Typography fontWeight="600" sx={{ fontSize: { xs: 12, md: 13 }, color: '#1a1a2e', mb: 1 }}>
+                      {producto.nombre}
+                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography sx={{ fontSize: { xs: 14, md: 16 }, fontWeight: 700, color: '#FF6B35' }}>
+                        ${Number(producto.precio).toLocaleString()}
+                      </Typography>
+                      <Button
+                        onClick={() => agregarAlCarrito(producto)}
+                        sx={{ minWidth: 30, width: 30, height: 30, background: '#1a1a2e', color: 'white', borderRadius: 2, fontSize: 18, p: 0, '&:hover': { background: '#FF6B35' } }}
+                      >
+                        +
+                      </Button>
+                    </Box>
+                  </CardContent>
+                  <CardActions />
+                </Card>
+              )
+            })}
           </div>
         )}
 
-        {/* OFERTA DEL DIA */}
-        <Box sx={{ backgroundColor: colores.dark, borderRadius: 3, p: 3, mt: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box>
-            <Typography sx={{ color: colores.beigeLight, fontWeight: 500, fontSize: 16, mb: 0.5 }}>Oferta del día 🔥</Typography>
-            <Typography sx={{ color: '#9B8560', fontSize: 12, mb: 1 }}>Combo gaseosa + snack + golosina</Typography>
-            <Typography sx={{ color: colores.gold, fontSize: 22, fontWeight: 500 }}>$2.500</Typography>
+        {/* BANNERS */}
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mt: 4 }}>
+          <Box sx={{ backgroundColor: '#FF6B35', borderRadius: 3, p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box>
+              <Typography sx={{ color: 'white', fontWeight: 700, fontSize: { xs: 14, md: 16 }, mb: 0.5 }}>Oferta del día 🔥</Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: { xs: 11, md: 12 }, mb: 1.5 }}>Combo gaseosa + snack + golosina</Typography>
+              <Button sx={{ background: 'white', color: '#FF6B35', borderRadius: 2, fontWeight: 600, fontSize: 12, '&:hover': { background: '#fff3f0' } }}>
+                Ver oferta
+              </Button>
+            </Box>
+            <Box sx={{ fontSize: { xs: 36, md: 50 } }}>🎁</Box>
           </Box>
-          <Box sx={{ fontSize: 50 }}>🎁</Box>
-        </Box>
 
-        {/* MERCADO PAGO */}
-        <Box sx={{ backgroundColor: '#009ee3', borderRadius: 3, p: 2.5, mt: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box>
-            <Typography sx={{ color: 'white', fontWeight: 500, fontSize: 14, mb: 0.5 }}>Pagá con Mercado Pago</Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontSize: 12 }}>Tarjeta, débito, crédito o saldo — rápido y seguro</Typography>
+          <Box sx={{ backgroundColor: '#1a1a2e', borderRadius: 3, p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box>
+              <Typography sx={{ color: 'white', fontWeight: 700, fontSize: { xs: 14, md: 16 }, mb: 0.5 }}>Pagá con Mercado Pago</Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: { xs: 11, md: 12 }, mb: 1.5 }}>Rápido, seguro y sin complicaciones</Typography>
+              <Button sx={{ background: 'white', color: '#1a1a2e', borderRadius: 2, fontWeight: 600, fontSize: 12, '&:hover': { background: '#f0f0f0' } }}>
+                Pagar ahora
+              </Button>
+            </Box>
+            <Box sx={{ fontSize: { xs: 36, md: 50 } }}>💳</Box>
           </Box>
-          <Button sx={{ background: 'white', color: '#009ee3', borderRadius: 2, fontWeight: 500, fontSize: 12, whiteSpace: 'nowrap', '&:hover': { background: '#f0f0f0' } }}>
-            Pagar ahora
-          </Button>
         </Box>
 
       </Container>
 
       {/* FOOTER */}
-      <Box sx={{ backgroundColor: colores.dark, py: 2.5, px: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 4 }}>
-        <Typography sx={{ color: colores.beigeLight, fontWeight: 500 }}>🏪 Kiosco</Typography>
-        <Stack direction="row" spacing={3}>
+      <Box sx={{ backgroundColor: '#1a1a2e', py: 2.5, px: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 4, flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex' }}>
+          {letras.map(({ l, c }) => (
+            <Typography key={l} sx={{ color: c, fontSize: { xs: 16, md: 20 }, fontWeight: 700 }}>{l}</Typography>
+          ))}
+        </Box>
+        <Stack direction="row" spacing={{ xs: 2, md: 3 }}>
           {['Inicio', 'Productos', 'Contacto'].map(link => (
-            <Typography key={link} sx={{ color: '#9B8560', fontSize: 12, cursor: 'pointer', '&:hover': { color: colores.gold } }}>{link}</Typography>
+            <Typography key={link} sx={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer', '&:hover': { color: '#FF6B35' } }}>{link}</Typography>
           ))}
         </Stack>
       </Box>
