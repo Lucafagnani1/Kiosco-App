@@ -42,7 +42,6 @@ function Carrito({ abierto, onCerrar, productos, onEliminar }) {
             <Typography variant="h6" fontWeight="bold" mt={1}>¡Pedido confirmado!</Typography>
             <Typography color="text.secondary" fontSize={13} mt={1}>
               {metodoPago === 'efectivo' && 'Pagás en efectivo al momento de la entrega.'}
-              {metodoPago === 'transferencia' && 'Te enviaremos los datos para hacer la transferencia.'}
               {metodoPago === 'mercadopago' && 'Serás redirigido a Mercado Pago para completar el pago.'}
             </Typography>
             <Button
@@ -101,7 +100,6 @@ function Carrito({ abierto, onCerrar, productos, onEliminar }) {
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
                 {[
                   { id: 'mercadopago', label: '💳 Mercado Pago', color: '#009ee3' },
-                  { id: 'transferencia', label: '🏦 Transferencia bancaria', color: '#6BCB77' },
                   { id: 'efectivo', label: '💵 Efectivo', color: '#FF6B35' },
                 ].map(({ id, label, color }) => (
                   <Button
