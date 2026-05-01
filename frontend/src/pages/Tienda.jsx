@@ -48,10 +48,7 @@ function Tienda() {
 
       {/* HEADER */}
       <AppBar position="sticky" sx={{ backgroundColor: '#1a1a2e', boxShadow: 'none' }}>
-        <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, md: 3 } }}>
-          <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: { xs: 10, md: 12 }, letterSpacing: 2 }}>
-            bienvenido a
-          </Typography>
+        <Toolbar sx={{ justifyContent: 'flex-end', px: { xs: 2, md: 3 } }}>
           <Button
             onClick={() => setCarritoAbierto(true)}
             sx={{
@@ -127,7 +124,7 @@ function Tienda() {
         </Box>
 
         {/* CATEGORIAS */}
-        <Stack direction="row" spacing={1} flexWrap="wrap" mb={3}>
+        <Stack direction="row" spacing={1} flexWrap="wrap" mb={5}>
           {categorias.map(cat => (
             <Chip
               key={cat}
