@@ -1,15 +1,18 @@
 import {
   Box, Container, Typography, Card, CardContent,
   CardMedia, CardActions, Button, AppBar, Toolbar,
-  Chip, Stack, CircularProgress, useMediaQuery, useTheme
+  Chip, Stack, CircularProgress, useMediaQuery, useTheme,
+  Dialog, DialogContent, DialogTitle, IconButton
 } from '@mui/material'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
-import { useState, useEffect } from 'react'
+import CloseIcon from '@mui/icons-material/Close'
+import { useState, useEffect, useRef } from 'react'
 import Carrito from '../components/Carrito'
 
 const API_URL = 'https://kiosco-app-production-5cff.up.railway.app'
 const categorias = ['Todos', '🍬 Golosinas', '🥤 Bebidas', '🍟 Snacks', '🎧 Accesorios', '🍔 Comida']
+const ITEMS_POR_PAGINA = 6
 
 function Tienda() {
   const [categoriaActiva, setCategoriaActiva] = useState('Todos')
@@ -17,9 +20,15 @@ function Tienda() {
   const [carritoAbierto, setCarritoAbierto] = useState(false)
   const [productos, setProductos] = useState([])
   const [cargando, setCargando] = useState(true)
+  const [pagina, setPagina] = useState(1)
+  const [modalInfo, setModalInfo] = useState(false)
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const isTablet = useMediaQuery(theme.breakpoints.down('md'))
+
+  const heroRef = useRef(null)
+  const productosRef = useRef(null)
+  const contactoRef = useRef(null)
 
   useEffect(() => {
     fetch(`${API_URL}/api/productos`)
@@ -32,8 +41,19 @@ function Tienda() {
     ? productos
     : productos.filter(p => categoriaActiva.includes(p.categoria))
 
+  const totalPaginas = Math.ceil(productosFiltrados.length / ITEMS_POR_PAGINA)
+  const productosPaginados = productosFiltrados.slice((pagina - 1) * ITEMS_POR_PAGINA, pagina * ITEMS_POR_PAGINA)
+
   const agregarAlCarrito = (producto) => setCarrito(prev => [...prev, producto])
   const eliminarDelCarrito = (index) => setCarrito(prev => prev.filter((_, i) => i !== index))
+
+  const scrollTo = (ref) => ref.current?.scrollIntoView({ behavior: 'smooth' })
+
+  const handleCategoria = (cat) => {
+    setCategoriaActiva(cat)
+    setPagina(1)
+    scrollTo(productosRef)
+  }
 
   const gridCols = isMobile ? '1fr' : isTablet ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)'
 
@@ -44,7 +64,7 @@ function Tienda() {
   ]
 
   return (
-    <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh', overflowX: 'hidden', width: '100%' }}>
+    <Box ref={heroRef} sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh', overflowX: 'hidden', width: '100%' }}>
 
       {/* HEADER */}
       <AppBar position="sticky" sx={{ backgroundColor: '#1a1a2e', boxShadow: 'none', overflowX: 'hidden' }}>
@@ -74,7 +94,10 @@ function Tienda() {
 
       {/* HERO */}
       <Box sx={{ backgroundColor: '#1a1a2e', py: { xs: 4, md: 5 }, textAlign: 'center', px: 2, width: '100%' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2, overflow: 'hidden' }}>
+        <Box
+          onClick={() => scrollTo(heroRef)}
+          sx={{ display: 'flex', justifyContent: 'center', mb: 2, overflow: 'hidden', cursor: 'pointer' }}
+        >
           {letras.map(({ l, c }) => (
             <Typography key={l} sx={{ color: c, fontSize: { xs: '10vw', sm: 56, md: 72 }, fontWeight: 700, lineHeight: 1, letterSpacing: -1 }}>
               {l}
@@ -82,12 +105,20 @@ function Tienda() {
           ))}
         </Box>
         <Stack direction="row" spacing={1} justifyContent="center" sx={{ mt: 2 }}>
-          <Button variant="contained" size={isMobile ? 'small' : 'medium'}
-            sx={{ backgroundColor: '#FF6B35', color: 'white', borderRadius: 2, '&:hover': { backgroundColor: '#e55a25' } }}>
+          <Button
+            variant="contained"
+            size={isMobile ? 'small' : 'medium'}
+            onClick={() => scrollTo(productosRef)}
+            sx={{ backgroundColor: '#FF6B35', color: 'white', borderRadius: 2, '&:hover': { backgroundColor: '#e55a25' } }}
+          >
             Ver productos
           </Button>
-          <Button variant="outlined" size={isMobile ? 'small' : 'medium'}
-            sx={{ borderColor: 'rgba(255,255,255,0.3)', color: 'white', borderRadius: 2, '&:hover': { borderColor: 'white' } }}>
+          <Button
+            variant="outlined"
+            size={isMobile ? 'small' : 'medium'}
+            onClick={() => setModalInfo(true)}
+            sx={{ borderColor: 'rgba(255,255,255,0.3)', color: 'white', borderRadius: 2, '&:hover': { borderColor: 'white' } }}
+          >
             Conocer más
           </Button>
         </Stack>
@@ -118,12 +149,12 @@ function Tienda() {
       <Container sx={{ py: 3, px: { xs: 2, md: 3 }, overflowX: 'hidden' }}>
 
         {/* TITULO */}
-        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+        <Box ref={productosRef} sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mb: 2, flexWrap: 'wrap' }}>
           <Typography fontWeight="700" sx={{ color: '#1a1a2e', fontSize: { xs: 15, md: 18 } }}>Productos destacados</Typography>
           <Typography sx={{ fontSize: 13, color: '#aaa' }}>— Los más vendidos</Typography>
         </Box>
 
-        {/* CATEGORIAS — scroll horizontal en mobile */}
+        {/* CATEGORIAS */}
         <Stack
           direction="row"
           spacing={1}
@@ -141,7 +172,7 @@ function Tienda() {
             <Chip
               key={cat}
               label={cat}
-              onClick={() => setCategoriaActiva(cat)}
+              onClick={() => handleCategoria(cat)}
               size={isMobile ? 'small' : 'medium'}
               sx={{
                 flexShrink: 0,
@@ -163,65 +194,97 @@ function Tienda() {
             <Typography mt={2} sx={{ color: '#888' }}>Cargando productos...</Typography>
           </Box>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: '14px', width: '100%' }}>
-            {productosFiltrados.map((producto, index) => {
-              const fondos = ['#FFEBEB', '#EBF3FF', '#FFFBEB', '#EBFFEF', '#F3EBFF', '#FFEBF6']
-              const fondo = fondos[index % fondos.length]
-              return (
-                <Card key={producto.id} sx={{ borderRadius: 3, border: '1px solid #eee', boxShadow: 'none', position: 'relative', transition: 'transform 0.2s, border-color 0.2s', '&:hover': { transform: 'translateY(-3px)', borderColor: '#FF6B35' }, overflow: 'hidden' }}>
+          <>
+            <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: '14px', width: '100%' }}>
+              {productosPaginados.map((producto, index) => {
+                const fondos = ['#FFEBEB', '#EBF3FF', '#FFFBEB', '#EBFFEF', '#F3EBFF', '#FFEBF6']
+                const fondo = fondos[index % fondos.length]
+                return (
+                  <Card key={producto.id} sx={{ borderRadius: 3, border: '1px solid #eee', boxShadow: 'none', position: 'relative', transition: 'transform 0.2s, border-color 0.2s', '&:hover': { transform: 'translateY(-3px)', borderColor: '#FF6B35' }, overflow: 'hidden' }}>
 
-                  {index % 3 === 0 && (
-                    <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#FF6B35', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>
-                      -20%
+                    {index % 3 === 0 && (
+                      <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#FF6B35', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>-20%</Box>
+                    )}
+                    {index % 3 === 2 && (
+                      <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#6BCB77', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>Nuevo</Box>
+                    )}
+                    {index % 3 === 1 && (
+                      <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#4D96FF', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>Top</Box>
+                    )}
+
+                    <Box sx={{ position: 'absolute', top: 8, right: 8, background: 'white', border: '1px solid #eee', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, cursor: 'pointer' }}>
+                      <FavoriteBorderIcon sx={{ fontSize: 14, color: '#aaa' }} />
                     </Box>
-                  )}
-                  {index % 3 === 2 && (
-                    <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#6BCB77', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>
-                      Nuevo
-                    </Box>
-                  )}
-                  {index % 3 === 1 && (
-                    <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#4D96FF', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>
-                      Top
-                    </Box>
-                  )}
 
-                  <Box sx={{ position: 'absolute', top: 8, right: 8, background: 'white', border: '1px solid #eee', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, cursor: 'pointer' }}>
-                    <FavoriteBorderIcon sx={{ fontSize: 14, color: '#aaa' }} />
-                  </Box>
+                    <CardMedia
+                      component="img"
+                      height={isMobile ? '110' : '130'}
+                      image={producto.imagen || `https://placehold.co/300x130/${fondo.replace('#', '')}/1a1a2e?text=${encodeURIComponent(producto.nombre)}`}
+                      alt={producto.nombre}
+                      sx={{ backgroundColor: fondo, objectFit: 'contain', p: 1 }}
+                    />
 
-                  <CardMedia
-                    component="img"
-                    height={isMobile ? '110' : '130'}
-                    image={producto.imagen || `https://placehold.co/300x130/${fondo.replace('#', '')}/1a1a2e?text=${encodeURIComponent(producto.nombre)}`}
-                    alt={producto.nombre}
-                    sx={{ backgroundColor: fondo, objectFit: 'contain', p: 1 }}
-                  />
-
-                  <CardContent sx={{ pb: 0, px: { xs: 1.5, md: 2 } }}>
-                    <Typography sx={{ fontSize: 9, color: '#aaa', textTransform: 'uppercase', letterSpacing: 0.5, mb: 0.5 }}>
-                      {producto.categoria}
-                    </Typography>
-                    <Typography fontWeight="600" sx={{ fontSize: { xs: 12, md: 13 }, color: '#1a1a2e', mb: 1 }}>
-                      {producto.nombre}
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography sx={{ fontSize: { xs: 14, md: 16 }, fontWeight: 700, color: '#FF6B35' }}>
-                        ${Number(producto.precio).toLocaleString()}
+                    <CardContent sx={{ pb: 0, px: { xs: 1.5, md: 2 } }}>
+                      <Typography sx={{ fontSize: 9, color: '#aaa', textTransform: 'uppercase', letterSpacing: 0.5, mb: 0.5 }}>
+                        {producto.categoria}
                       </Typography>
-                      <Button
-                        onClick={() => agregarAlCarrito(producto)}
-                        sx={{ minWidth: 30, width: 30, height: 30, background: '#1a1a2e', color: 'white', borderRadius: 2, fontSize: 18, p: 0, '&:hover': { background: '#FF6B35' } }}
-                      >
-                        +
-                      </Button>
-                    </Box>
-                  </CardContent>
-                  <CardActions />
-                </Card>
-              )
-            })}
-          </div>
+                      <Typography fontWeight="600" sx={{ fontSize: { xs: 12, md: 13 }, color: '#1a1a2e', mb: 1 }}>
+                        {producto.nombre}
+                      </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography sx={{ fontSize: { xs: 14, md: 16 }, fontWeight: 700, color: '#FF6B35' }}>
+                          ${Number(producto.precio).toLocaleString()}
+                        </Typography>
+                        <Button
+                          onClick={() => agregarAlCarrito(producto)}
+                          sx={{ minWidth: 30, width: 30, height: 30, background: '#1a1a2e', color: 'white', borderRadius: 2, fontSize: 18, p: 0, '&:hover': { background: '#FF6B35' } }}
+                        >
+                          +
+                        </Button>
+                      </Box>
+                    </CardContent>
+                    <CardActions />
+                  </Card>
+                )
+              })}
+            </div>
+
+            {/* PAGINACION */}
+            {totalPaginas > 1 && (
+              <Stack direction="row" spacing={1} justifyContent="center" mt={4}>
+                <Button
+                  disabled={pagina === 1}
+                  onClick={() => { setPagina(p => p - 1); scrollTo(productosRef) }}
+                  sx={{ borderColor: '#ddd', color: '#555', border: '1px solid #ddd', borderRadius: 2, minWidth: 36 }}
+                >
+                  ←
+                </Button>
+                {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(p => (
+                  <Button
+                    key={p}
+                    onClick={() => { setPagina(p); scrollTo(productosRef) }}
+                    sx={{
+                      minWidth: 36,
+                      borderRadius: 2,
+                      background: pagina === p ? '#1a1a2e' : 'white',
+                      color: pagina === p ? 'white' : '#555',
+                      border: `1px solid ${pagina === p ? '#1a1a2e' : '#ddd'}`,
+                      '&:hover': { background: '#FF6B35', color: 'white', borderColor: '#FF6B35' }
+                    }}
+                  >
+                    {p}
+                  </Button>
+                ))}
+                <Button
+                  disabled={pagina === totalPaginas}
+                  onClick={() => { setPagina(p => p + 1); scrollTo(productosRef) }}
+                  sx={{ borderColor: '#ddd', color: '#555', border: '1px solid #ddd', borderRadius: 2, minWidth: 36 }}
+                >
+                  →
+                </Button>
+              </Stack>
+            )}
+          </>
         )}
 
         {/* BANNERS */}
@@ -230,7 +293,10 @@ function Tienda() {
             <Box>
               <Typography sx={{ color: 'white', fontWeight: 700, fontSize: { xs: 14, md: 16 }, mb: 0.5 }}>Oferta del día 🔥</Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: { xs: 11, md: 12 }, mb: 1.5 }}>Combo gaseosa + snack + golosina</Typography>
-              <Button sx={{ background: 'white', color: '#FF6B35', borderRadius: 2, fontWeight: 600, fontSize: 12, '&:hover': { background: '#fff3f0' } }}>
+              <Button
+                onClick={() => scrollTo(productosRef)}
+                sx={{ background: 'white', color: '#FF6B35', borderRadius: 2, fontWeight: 600, fontSize: 12, '&:hover': { background: '#fff3f0' } }}
+              >
                 Ver oferta
               </Button>
             </Box>
@@ -241,7 +307,10 @@ function Tienda() {
             <Box>
               <Typography sx={{ color: 'white', fontWeight: 700, fontSize: { xs: 14, md: 16 }, mb: 0.5 }}>Pagá con Mercado Pago</Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: { xs: 11, md: 12 }, mb: 1.5 }}>Rápido, seguro y sin complicaciones</Typography>
-              <Button sx={{ background: 'white', color: '#1a1a2e', borderRadius: 2, fontWeight: 600, fontSize: 12, '&:hover': { background: '#f0f0f0' } }}>
+              <Button
+                onClick={() => setCarritoAbierto(true)}
+                sx={{ background: 'white', color: '#1a1a2e', borderRadius: 2, fontWeight: 600, fontSize: 12, '&:hover': { background: '#f0f0f0' } }}
+              >
                 Pagar ahora
               </Button>
             </Box>
@@ -249,21 +318,76 @@ function Tienda() {
           </Box>
         </Box>
 
+        {/* CONTACTO */}
+        <Box ref={contactoRef} sx={{ mt: 4, backgroundColor: 'white', borderRadius: 3, p: { xs: 2, md: 3 }, border: '1px solid #eee' }}>
+          <Typography fontWeight="700" sx={{ color: '#1a1a2e', fontSize: { xs: 15, md: 18 }, mb: 2 }}>📍 Contacto</Typography>
+          <Stack spacing={1}>
+            <Typography sx={{ fontSize: 13, color: '#555' }}>📍 Dirección: Av. Principal 123, Buenos Aires</Typography>
+            <Typography sx={{ fontSize: 13, color: '#555' }}>🕐 Horario: Lunes a Domingo 8:00 - 22:00</Typography>
+            <Typography sx={{ fontSize: 13, color: '#555' }}>📱 WhatsApp: +54 11 1234-5678</Typography>
+            <Typography sx={{ fontSize: 13, color: '#555' }}>📧 Email: maxishop@gmail.com</Typography>
+          </Stack>
+        </Box>
+
       </Container>
 
       {/* FOOTER */}
-     <Box sx={{ backgroundColor: '#1a1a2e', py: 2.5, px: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 4, gap: 4, width: '100%', overflow: 'hidden' }}>
-        <Box sx={{ display: 'flex', flexShrink: 0 }}>
+      <Box sx={{ backgroundColor: '#1a1a2e', py: 2.5, px: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 4, gap: 4, width: '100%', overflow: 'hidden' }}>
+        <Box
+          onClick={() => scrollTo(heroRef)}
+          sx={{ display: 'flex', flexShrink: 0, cursor: 'pointer' }}
+        >
           {letras.map(({ l, c }) => (
             <Typography key={l} sx={{ color: c, fontSize: { xs: 16, md: 20 }, fontWeight: 700 }}>{l}</Typography>
           ))}
         </Box>
         <Stack direction="row" spacing={{ xs: 1.5, md: 3 }} sx={{ flexShrink: 0 }}>
-          {['Inicio', 'Productos', 'Contacto'].map(link => (
-            <Typography key={link} sx={{ color: 'rgba(255,255,255,0.4)', fontSize: { xs: 11, md: 12 }, cursor: 'pointer', whiteSpace: 'nowrap', '&:hover': { color: '#FF6B35' } }}>{link}</Typography>
+          {[
+            { label: 'Inicio', ref: heroRef },
+            { label: 'Productos', ref: productosRef },
+            { label: 'Contacto', ref: contactoRef },
+          ].map(({ label, ref }) => (
+            <Typography
+              key={label}
+              onClick={() => scrollTo(ref)}
+              sx={{ color: 'rgba(255,255,255,0.4)', fontSize: { xs: 11, md: 12 }, cursor: 'pointer', whiteSpace: 'nowrap', '&:hover': { color: '#FF6B35' } }}
+            >
+              {label}
+            </Typography>
           ))}
         </Stack>
       </Box>
+
+      {/* MODAL CONOCER MAS */}
+      <Dialog open={modalInfo} onClose={() => setModalInfo(false)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
+          <Box sx={{ display: 'flex' }}>
+            {letras.map(({ l, c }) => (
+              <Typography key={l} sx={{ color: c, fontSize: 22, fontWeight: 700 }}>{l}</Typography>
+            ))}
+          </Box>
+          <IconButton onClick={() => setModalInfo(false)}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Stack spacing={2}>
+            <Typography sx={{ fontSize: 13, color: '#555' }}>🏪 Somos tu kiosco de confianza del barrio, ahora también online.</Typography>
+            <Typography sx={{ fontSize: 13, color: '#555' }}>📍 Av. Principal 123, Buenos Aires</Typography>
+            <Typography sx={{ fontSize: 13, color: '#555' }}>🕐 Lunes a Domingo 8:00 - 22:00</Typography>
+            <Typography sx={{ fontSize: 13, color: '#555' }}>📱 WhatsApp: +54 11 1234-5678</Typography>
+            <Typography sx={{ fontSize: 13, color: '#555' }}>💳 Aceptamos Mercado Pago y efectivo</Typography>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={() => { setModalInfo(false); scrollTo(productosRef) }}
+              sx={{ backgroundColor: '#FF6B35', color: 'white', borderRadius: 2, mt: 1, '&:hover': { backgroundColor: '#e55a25' } }}
+            >
+              Ver productos
+            </Button>
+          </Stack>
+        </DialogContent>
+      </Dialog>
 
       <Carrito
         abierto={carritoAbierto}
