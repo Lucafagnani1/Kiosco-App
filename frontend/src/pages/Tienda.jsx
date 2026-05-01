@@ -46,6 +46,7 @@ function Tienda() {
 
   const agregarAlCarrito = (producto) => setCarrito(prev => [...prev, producto])
   const eliminarDelCarrito = (index) => setCarrito(prev => prev.filter((_, i) => i !== index))
+  const vaciarCarrito = () => setCarrito([])
 
   const scrollTo = (ref) => ref.current?.scrollIntoView({ behavior: 'smooth' })
 
@@ -201,7 +202,6 @@ function Tienda() {
                 const fondo = fondos[index % fondos.length]
                 return (
                   <Card key={producto.id} sx={{ borderRadius: 3, border: '1px solid #eee', boxShadow: 'none', position: 'relative', transition: 'transform 0.2s, border-color 0.2s', '&:hover': { transform: 'translateY(-3px)', borderColor: '#FF6B35' }, overflow: 'hidden' }}>
-
                     {index % 3 === 0 && (
                       <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#FF6B35', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>-20%</Box>
                     )}
@@ -211,11 +211,9 @@ function Tienda() {
                     {index % 3 === 1 && (
                       <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#4D96FF', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>Top</Box>
                     )}
-
                     <Box sx={{ position: 'absolute', top: 8, right: 8, background: 'white', border: '1px solid #eee', width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1, cursor: 'pointer' }}>
                       <FavoriteBorderIcon sx={{ fontSize: 14, color: '#aaa' }} />
                     </Box>
-
                     <CardMedia
                       component="img"
                       height={isMobile ? '110' : '130'}
@@ -223,7 +221,6 @@ function Tienda() {
                       alt={producto.nombre}
                       sx={{ backgroundColor: fondo, objectFit: 'contain', p: 1 }}
                     />
-
                     <CardContent sx={{ pb: 0, px: { xs: 1.5, md: 2 } }}>
                       <Typography sx={{ fontSize: 9, color: '#aaa', textTransform: 'uppercase', letterSpacing: 0.5, mb: 0.5 }}>
                         {producto.categoria}
@@ -256,32 +253,25 @@ function Tienda() {
                   disabled={pagina === 1}
                   onClick={() => { setPagina(p => p - 1); scrollTo(productosRef) }}
                   sx={{ borderColor: '#ddd', color: '#555', border: '1px solid #ddd', borderRadius: 2, minWidth: 36 }}
-                >
-                  ←
-                </Button>
+                >←</Button>
                 {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(p => (
                   <Button
                     key={p}
                     onClick={() => { setPagina(p); scrollTo(productosRef) }}
                     sx={{
-                      minWidth: 36,
-                      borderRadius: 2,
+                      minWidth: 36, borderRadius: 2,
                       background: pagina === p ? '#1a1a2e' : 'white',
                       color: pagina === p ? 'white' : '#555',
                       border: `1px solid ${pagina === p ? '#1a1a2e' : '#ddd'}`,
                       '&:hover': { background: '#FF6B35', color: 'white', borderColor: '#FF6B35' }
                     }}
-                  >
-                    {p}
-                  </Button>
+                  >{p}</Button>
                 ))}
                 <Button
                   disabled={pagina === totalPaginas}
                   onClick={() => { setPagina(p => p + 1); scrollTo(productosRef) }}
                   sx={{ borderColor: '#ddd', color: '#555', border: '1px solid #ddd', borderRadius: 2, minWidth: 36 }}
-                >
-                  →
-                </Button>
+                >→</Button>
               </Stack>
             )}
           </>
@@ -293,24 +283,17 @@ function Tienda() {
             <Box>
               <Typography sx={{ color: 'white', fontWeight: 700, fontSize: { xs: 14, md: 16 }, mb: 0.5 }}>Oferta del día 🔥</Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: { xs: 11, md: 12 }, mb: 1.5 }}>Combo gaseosa + snack + golosina</Typography>
-              <Button
-                onClick={() => scrollTo(productosRef)}
-                sx={{ background: 'white', color: '#FF6B35', borderRadius: 2, fontWeight: 600, fontSize: 12, '&:hover': { background: '#fff3f0' } }}
-              >
+              <Button onClick={() => scrollTo(productosRef)} sx={{ background: 'white', color: '#FF6B35', borderRadius: 2, fontWeight: 600, fontSize: 12, '&:hover': { background: '#fff3f0' } }}>
                 Ver oferta
               </Button>
             </Box>
             <Box sx={{ fontSize: { xs: 36, md: 50 }, flexShrink: 0 }}>🎁</Box>
           </Box>
-
           <Box sx={{ backgroundColor: '#1a1a2e', borderRadius: 3, p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box>
               <Typography sx={{ color: 'white', fontWeight: 700, fontSize: { xs: 14, md: 16 }, mb: 0.5 }}>Pagá con Mercado Pago</Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: { xs: 11, md: 12 }, mb: 1.5 }}>Rápido, seguro y sin complicaciones</Typography>
-              <Button
-                onClick={() => setCarritoAbierto(true)}
-                sx={{ background: 'white', color: '#1a1a2e', borderRadius: 2, fontWeight: 600, fontSize: 12, '&:hover': { background: '#f0f0f0' } }}
-              >
+              <Button onClick={() => setCarritoAbierto(true)} sx={{ background: 'white', color: '#1a1a2e', borderRadius: 2, fontWeight: 600, fontSize: 12, '&:hover': { background: '#f0f0f0' } }}>
                 Pagar ahora
               </Button>
             </Box>
@@ -333,10 +316,7 @@ function Tienda() {
 
       {/* FOOTER */}
       <Box sx={{ backgroundColor: '#1a1a2e', py: 2.5, px: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 4, gap: 4, width: '100%', overflow: 'hidden' }}>
-        <Box
-          onClick={() => scrollTo(heroRef)}
-          sx={{ display: 'flex', flexShrink: 0, cursor: 'pointer' }}
-        >
+        <Box onClick={() => scrollTo(heroRef)} sx={{ display: 'flex', flexShrink: 0, cursor: 'pointer' }}>
           {letras.map(({ l, c }) => (
             <Typography key={l} sx={{ color: c, fontSize: { xs: 16, md: 20 }, fontWeight: 700 }}>{l}</Typography>
           ))}
@@ -394,6 +374,7 @@ function Tienda() {
         onCerrar={() => setCarritoAbierto(false)}
         productos={carrito}
         onEliminar={eliminarDelCarrito}
+        onVaciar={vaciarCarrito}
       />
     </Box>
   )

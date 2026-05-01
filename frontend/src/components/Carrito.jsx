@@ -1,24 +1,48 @@
 import {
   Drawer, Box, Typography, IconButton, Button,
-  List, ListItem, ListItemText, Divider
+  List, ListItem, ListItemText, Divider, CircularProgress
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { useState } from 'react'
 
-function Carrito({ abierto, onCerrar, productos, onEliminar }) {
+const API_URL = 'https://kiosco-app-production-5cff.up.railway.app'
+
+function Carrito({ abierto, onCerrar, productos, onEliminar, onVaciar }) {
   const total = productos.reduce((acc, p) => acc + Number(p.precio), 0)
   const [metodoPago, setMetodoPago] = useState(null)
   const [confirmado, setConfirmado] = useState(false)
+  const [cargando, setCargando] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleConfirmar = () => {
+  const handleConfirmar = async () => {
     if (!metodoPago) return
-    setConfirmado(true)
+    setCargando(true)
+    setError('')
+    try {
+      const res = await fetch(`${API_URL}/api/pedidos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productos: productos.map(p => ({ nombre: p.nombre, precio: p.precio })),
+          total,
+          metodo_pago: metodoPago
+        })
+      })
+      if (!res.ok) throw new Error('Error al guardar el pedido')
+      setConfirmado(true)
+      onVaciar()
+    } catch {
+      setError('Hubo un error al confirmar el pedido. Intentá de nuevo.')
+    } finally {
+      setCargando(false)
+    }
   }
 
   const resetear = () => {
     setMetodoPago(null)
     setConfirmado(false)
+    setError('')
   }
 
   return (
@@ -44,13 +68,16 @@ function Carrito({ abierto, onCerrar, productos, onEliminar }) {
               {metodoPago === 'efectivo' && 'Pagás en efectivo al momento de la entrega.'}
               {metodoPago === 'mercadopago' && 'Serás redirigido a Mercado Pago para completar el pago.'}
             </Typography>
+            <Typography fontSize={12} color="text.secondary" mt={1}>
+              Tu pedido fue registrado y pronto será atendido 🎉
+            </Typography>
             <Button
               fullWidth
               variant="outlined"
               sx={{ mt: 3, borderColor: '#FF6B35', color: '#FF6B35' }}
-              onClick={resetear}
+              onClick={() => { resetear(); onCerrar() }}
             >
-              Volver al carrito
+              Cerrar
             </Button>
           </Box>
         ) : (
@@ -122,11 +149,17 @@ function Carrito({ abierto, onCerrar, productos, onEliminar }) {
                 ))}
               </Box>
 
+              {error && (
+                <Typography fontSize={12} color="error" mb={1} textAlign="center">
+                  {error}
+                </Typography>
+              )}
+
               <Button
                 fullWidth
                 variant="contained"
                 size="large"
-                disabled={productos.length === 0 || !metodoPago}
+                disabled={productos.length === 0 || !metodoPago || cargando}
                 onClick={handleConfirmar}
                 sx={{
                   backgroundColor: '#1a1a2e',
@@ -134,7 +167,7 @@ function Carrito({ abierto, onCerrar, productos, onEliminar }) {
                   '&:disabled': { backgroundColor: '#eee', color: '#aaa' }
                 }}
               >
-                Confirmar pedido
+                {cargando ? <CircularProgress size={22} sx={{ color: 'white' }} /> : 'Confirmar pedido'}
               </Button>
             </Box>
           </>
