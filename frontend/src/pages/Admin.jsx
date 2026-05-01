@@ -8,6 +8,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
+import LogoutIcon from '@mui/icons-material/Logout'
 import { useState, useEffect } from 'react'
 
 const categorias = ['Golosinas', 'Bebidas', 'Snacks', 'Accesorios', 'Comida']
@@ -28,6 +29,11 @@ function Admin() {
   }
 
   useEffect(() => { cargarProductos() }, [])
+
+  const cerrarSesion = () => {
+    localStorage.removeItem('token')
+    window.location.href = '/login'
+  }
 
   const abrirAgregar = () => {
     setProductoActual(productoVacio)
@@ -71,7 +77,17 @@ function Admin() {
           <Typography variant="h6" fontWeight="bold">
             🔧 Panel de Administración
           </Typography>
-          <Button color="inherit" href="/">Ver Tienda</Button>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button color="inherit" href="/">Ver Tienda</Button>
+            <Button
+              color="inherit"
+              onClick={cerrarSesion}
+              startIcon={<LogoutIcon />}
+              sx={{ color: '#FF6B35', '&:hover': { color: '#e55a25' } }}
+            >
+              Cerrar sesión
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
 
