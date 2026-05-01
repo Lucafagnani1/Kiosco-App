@@ -44,7 +44,7 @@ function Tienda() {
   ]
 
   return (
-    <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+    <Box sx={{ backgroundColor: '#f8f9fa', minHeight: '100vh', overflowX: 'hidden', maxWidth: '100vw' }}>
 
       {/* HEADER */}
       <AppBar position="sticky" sx={{ backgroundColor: '#1a1a2e', boxShadow: 'none' }}>
@@ -73,10 +73,10 @@ function Tienda() {
       </AppBar>
 
       {/* HERO */}
-      <Box sx={{ backgroundColor: '#1a1a2e', py: { xs: 4, md: 5 }, textAlign: 'center', px: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+      <Box sx={{ backgroundColor: '#1a1a2e', py: { xs: 4, md: 5 }, textAlign: 'center', px: 2, overflowX: 'hidden', width: '100%' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2, flexWrap: 'nowrap', overflow: 'hidden' }}>
           {letras.map(({ l, c }) => (
-            <Typography key={l} sx={{ color: c, fontSize: { xs: 40, sm: 56, md: 72 }, fontWeight: 700, lineHeight: 1, letterSpacing: -1 }}>
+            <Typography key={l} sx={{ color: c, fontSize: { xs: '10vw', sm: 56, md: 72 }, fontWeight: 700, lineHeight: 1, letterSpacing: -1 }}>
               {l}
             </Typography>
           ))}
@@ -94,28 +94,28 @@ function Tienda() {
       </Box>
 
       {/* PROMO BAR */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' } }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, width: '100%' }}>
         {[['🚚', 'Envío rápido', '#FF6B35'], ['💳', 'Mercado Pago', '#FFD93D'], ['⭐', 'Calidad garantizada', '#6BCB77'], ['🕐', 'Todos los días', '#4D96FF']].map(([icon, text, bg]) => (
-          <Box key={text} sx={{ backgroundColor: bg, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
-            <span style={{ fontSize: 16 }}>{icon}</span>
-            <Typography sx={{ fontSize: { xs: 11, md: 12 }, fontWeight: 500, color: bg === '#FFD93D' ? '#333' : 'white' }}>
-              {text}
+          <Box key={text} sx={{ backgroundColor: bg, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, overflow: 'hidden' }}>
+            <span style={{ fontSize: 14, flexShrink: 0 }}>{icon}</span>
+            <Typography sx={{ fontSize: { xs: 10, md: 12 }, fontWeight: 500, color: bg === '#FFD93D' ? '#333' : 'white', whiteSpace: 'nowrap' }}>
+              {isMobile ? text.split(' ')[0] : text}
             </Typography>
           </Box>
         ))}
       </Box>
 
       {/* STATS */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', backgroundColor: 'white', borderBottom: '1px solid #eee' }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', backgroundColor: 'white', borderBottom: '1px solid #eee', width: '100%' }}>
         {[['+ 500', 'Productos', '#FF6B35'], ['+1.2k', 'Clientes', '#FFD93D'], ['4.9 ★', 'Calificación', '#6BCB77'], ['24hs', 'Atención', '#4D96FF']].map(([num, label, color]) => (
-          <Box key={label} sx={{ p: { xs: 1.5, md: 2 }, textAlign: 'center', borderRight: '1px solid #eee' }}>
-            <Typography sx={{ fontSize: { xs: 14, md: 20 }, fontWeight: 700, color }}>{num}</Typography>
-            <Typography sx={{ fontSize: { xs: 9, md: 11 }, color: '#888' }}>{label}</Typography>
+          <Box key={label} sx={{ p: { xs: 1, md: 2 }, textAlign: 'center', borderRight: '1px solid #eee', overflow: 'hidden' }}>
+            <Typography sx={{ fontSize: { xs: 12, md: 20 }, fontWeight: 700, color }}>{num}</Typography>
+            <Typography sx={{ fontSize: { xs: 8, md: 11 }, color: '#888' }}>{label}</Typography>
           </Box>
         ))}
       </Box>
 
-      <Container sx={{ py: 3, px: { xs: 2, md: 3 } }}>
+      <Container sx={{ py: 3, px: { xs: 2, md: 3 }, overflowX: 'hidden' }}>
 
         {/* TITULO */}
         <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mb: 2, flexWrap: 'wrap' }}>
@@ -151,12 +151,12 @@ function Tienda() {
             <Typography mt={2} sx={{ color: '#888' }}>Cargando productos...</Typography>
           </Box>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: '14px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: gridCols, gap: '14px', width: '100%' }}>
             {productosFiltrados.map((producto, index) => {
               const fondos = ['#FFEBEB', '#EBF3FF', '#FFFBEB', '#EBFFEF', '#F3EBFF', '#FFEBF6']
               const fondo = fondos[index % fondos.length]
               return (
-                <Card key={producto.id} sx={{ borderRadius: 3, border: '1px solid #eee', boxShadow: 'none', position: 'relative', transition: 'transform 0.2s, border-color 0.2s', '&:hover': { transform: 'translateY(-3px)', borderColor: '#FF6B35' } }}>
+                <Card key={producto.id} sx={{ borderRadius: 3, border: '1px solid #eee', boxShadow: 'none', position: 'relative', transition: 'transform 0.2s, border-color 0.2s', '&:hover': { transform: 'translateY(-3px)', borderColor: '#FF6B35' }, overflow: 'hidden' }}>
 
                   {index % 3 === 0 && (
                     <Box sx={{ position: 'absolute', top: 8, left: 8, background: '#FF6B35', color: 'white', fontSize: 10, px: 1, py: 0.3, borderRadius: 5, zIndex: 1, fontWeight: 600 }}>
@@ -222,7 +222,7 @@ function Tienda() {
                 Ver oferta
               </Button>
             </Box>
-            <Box sx={{ fontSize: { xs: 36, md: 50 } }}>🎁</Box>
+            <Box sx={{ fontSize: { xs: 36, md: 50 }, flexShrink: 0 }}>🎁</Box>
           </Box>
 
           <Box sx={{ backgroundColor: '#1a1a2e', borderRadius: 3, p: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -233,14 +233,14 @@ function Tienda() {
                 Pagar ahora
               </Button>
             </Box>
-            <Box sx={{ fontSize: { xs: 36, md: 50 } }}>💳</Box>
+            <Box sx={{ fontSize: { xs: 36, md: 50 }, flexShrink: 0 }}>💳</Box>
           </Box>
         </Box>
 
       </Container>
 
       {/* FOOTER */}
-      <Box sx={{ backgroundColor: '#1a1a2e', py: 2.5, px: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 4, flexWrap: 'wrap', gap: 2 }}>
+      <Box sx={{ backgroundColor: '#1a1a2e', py: 2.5, px: { xs: 2, md: 3 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 4, flexWrap: 'wrap', gap: 2, width: '100%' }}>
         <Box sx={{ display: 'flex' }}>
           {letras.map(({ l, c }) => (
             <Typography key={l} sx={{ color: c, fontSize: { xs: 16, md: 20 }, fontWeight: 700 }}>{l}</Typography>
